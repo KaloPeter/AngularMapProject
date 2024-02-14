@@ -22,7 +22,7 @@ export class LongLatToAddrComponent implements OnInit {
 
     var theMarker = {};
 
-    map.on('click', function (e: any) {
+    map.on('click', async function (e: any) {
       var lat = e.latlng.lat;
       var lon = e.latlng.lng;
 
@@ -36,32 +36,11 @@ export class LongLatToAddrComponent implements OnInit {
       //Add a marker to show where you clicked.
       theMarker = L.marker([lat, lon]).addTo(map);
 
-      var xmlhttp = new XMLHttpRequest();
       var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + lat + "&lon=" + lon + "";
-
-      xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          var resp = JSON.parse(this.responseText);
-          console.log(resp.display_name);
-
-
-
-        }
-      };
-
-
-      xmlhttp.open("GET", url, true);
-      xmlhttp.send();
-
-
+      const response = await fetch(url);
+      const arr = await response.json();
+      console.log(arr.address);
     });
-
-
-
-    //     $.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=47.217954&lon=-1.552918', function(data){
-    //     console.log(data.address.road);
-    // });
-
 
   }
 
