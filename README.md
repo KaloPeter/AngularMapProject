@@ -1,1 +1,1 @@
-In this project I am trying to implement different map options about findig places by addresses, or clicking on the map, and giving back the place by converting the latitude and longitude using different 3rd party sources.
+In this project I am trying to implement different map implementations using the leaflet(JavaScript library for interactive maps) about findig places by their addresses, or clicking on the map, and giving back the place by converting the latitude and longitude using different 3rd party sources.
