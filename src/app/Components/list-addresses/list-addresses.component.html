@@ -1,0 +1,26 @@
+<div class="container">
+
+    <b>Coordinates</b>
+    <form>
+        <input type="text" name="lat" [(ngModel)]="model.lat" id="lat" size=12 value="">
+        <input type="text" name="lon" [(ngModel)]="model.lon" id="lon" size=12 value="">
+    </form>
+
+    <!-- (keyup)="addr_search(addr);" -->
+    <b>Address Lookup</b>
+    <div id="search">
+        <input type="text" #addr name="addr" value="" id="addr" size="58" (keyup)="addr_search(addr);" />
+        <button type=" button" (click)="addr_search(addr);">Search</button>
+        <div id="results"></div>
+    </div>
+
+</div>
+
+
+
+<div *ngFor="let m of markers2">
+    <button (click)="setLonlat(m)">{{m.name}}</button>
+</div>
+
+<hr>
+<div id="map2"></div>

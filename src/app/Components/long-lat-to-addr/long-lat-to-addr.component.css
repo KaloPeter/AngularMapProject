@@ -1,0 +1,11 @@
+#map3 {
+    height: 400px;
+}
+
+.leaflet-grab {
+    cursor: auto;
+}
+
+.leaflet-dragging .leaflet-grab {
+    cursor: move;
+}
