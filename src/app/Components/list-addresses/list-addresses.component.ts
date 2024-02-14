@@ -18,69 +18,61 @@ export class ListAddressesComponent {
   layerGroup: any;
 
   timeout: any = null;
-
-
-
-
+  theMarker: any = {};
   ngOnInit(): void {
     this.map2 = L.map('map2').setView([51.505, -0.09], 13);
     this.layerGroup = L.layerGroup().addTo(this.map2);
-
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map2);
 
 
-  }
+    //function (e:any) {} --->  (e:any)=>{}
+    this.map2.on('click', (e: any) => {
+      var lat = e.latlng.lat;
+      var lon = e.latlng.lng;
 
-
-  addr_search(addr: any) {
-
-    var xmlhttp = new XMLHttpRequest();
-    var url = "https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + addr.value;
-    var markers: Marker[] = [];
-
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout(function () {
-      xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          var myArr = JSON.parse(this.responseText);
-          var arr = myArr;
-          var out = "";
-          var i;
-
-          if (arr.length > 0) {
-            for (i = 0; i < arr.length; i++) {
-              var m: Marker = { lat: arr[i].lat, lon: arr[i].lon, name: arr[i].display_name };
-              markers.push(m)
-              console.log(out);
-
-              out += arr[i].lat + ", " + arr[i].lon + "___" + arr[i].display_name;
-
-            }
-            //console.log(markers);
-
-          }
-          // else {
-          //   //document.getElementById('results').innerHTML = "Sorry, no results...";
-          //   //console.log("NO RESULT");
-          //   //alert("NO RESULT")
-          // }
-        }
+      if (this.theMarker != undefined) {
+        this.map2.removeLayer(this.theMarker);
       };
 
-    }, 1000);//if input stops for 700 millisec, we start searching--> not sending request when keyUp
+      //Add a marker to show where you clicked.
+      this.theMarker = L.marker([lat, lon]).addTo(this.layerGroup);
+
+      console.log(lat + "_" + lon);
 
 
+    });
 
 
-    this.markers2 = markers;
-
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
 
   }
+
+
+  async addr_search(addr: any) {
+
+    //Waiter if user stopped typing, then after one sec we execute implemented code in body--->Pressing Search/Find button is not needed==More dynamic, typing and searching
+    //Problem---> Cant reference marker immidiately with this, needs--Might cause problem later--too many requests, error during response etc......
+    clearTimeout(this.timeout);
+    var url = "https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + addr.value;
+    var markers: Marker[] = [];
+    this.timeout = setTimeout(async function () {
+      const response = await fetch(url);
+      const arr = await response.json();
+
+      if (arr.length > 0) {
+        var i;
+        for (i = 0; i < arr.length; i++) {
+          //arr[i]-> given address by user might not be specific, so every option has to be displayed
+          var m: Marker = { lat: arr[i].lat, lon: arr[i].lon, name: arr[i].display_name };
+          markers.push(m);
+        }
+      }
+    }, 1000)
+    this.markers2 = markers;
+  }
+
 
   setLonlat(m: Marker) {
 
@@ -91,14 +83,14 @@ export class ListAddressesComponent {
     this.map2.setView([m.lat, m.lon], 13);
     // L.marker([m.lat, m.lon]).addTo(this.map2);
 
-    L.marker([m.lat, m.lon]).addTo(this.layerGroup);
+    this.theMarker = L.marker([m.lat, m.lon]).addTo(this.layerGroup);
+
+    console.log(m.lat + "_" + m.lon);
+
 
     // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     // }).addTo(map2);
-
-
-
 
   }
 }
